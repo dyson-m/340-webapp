@@ -3,16 +3,13 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
-app = Flask(__name__)
 
-# Import configurations from our Config class 
-app.config.from_object(Config)
-
-# Initalize Database
-db = SQLAlchemy(app)
-
-# Initialize Flask-Login
-login = LoginManager(app)
-login.login_view = 'login'
-
-from app import routes  
+def create_app(config='app.config.DevelopmentConfig'):
+    
+    app = Flask(__name__)
+    app.config.from_object(config)
+    from app import routes
+    db.init_app(app)
+    login = LoginManager(app)
+    login.long_View = 'login'
+    return app
