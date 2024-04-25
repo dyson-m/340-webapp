@@ -5,7 +5,6 @@ from flask_login import LoginManager
 
 
 def create_app(config='app.config.DevelopmentConfig'):
-    
     app = Flask(__name__)
     app.config.from_object(config)
     from app import routes
