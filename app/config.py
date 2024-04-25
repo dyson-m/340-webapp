@@ -11,3 +11,10 @@ class Config:
     # will prefer to use environment variable first, otherwise uses hardcoded string
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'mysql+pymysql://container@host.docker.internal/webapp'
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
