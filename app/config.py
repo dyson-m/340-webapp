@@ -14,6 +14,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///development.db'
 
 class TestingConfig(Config):
     TESTING = True
