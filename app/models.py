@@ -238,7 +238,7 @@ class Cart(db.Model):
         """Removes all items from the cart.
 
         Example:
-            >>> user = user = User(username=..., name=..., email=..., address=...)
+            >>> user = User(username=..., name=..., email=..., address=...)
             >>> cart = Cart(user=user)
             >>> product = Product(name='TV', description='A small TV',
             >>>                   price=100.99, stock=5)

@@ -6,7 +6,7 @@ from app.extensions import db
 from app.models import Cart, Order, Product, User
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def test_app():
     """Create a test Flask app."""
     app = create_app('app.config.TestingConfig')
@@ -34,13 +34,15 @@ def session():
 
 @pytest.fixture(scope='function')
 def client(test_app):
-    return test_app.test_client()
+    with test_app.app_context():
+        yield test_app.test_client()
 
 
 @pytest.fixture(scope='function')
 def user(session):
     """Add a simple test user to the database."""
-    user = User(username="test_username", name="test_name", email="test_email", address="test_address")
+    user = User(username="test_username", name="test_name", email="test_email",
+                address="test_address")
     user.set_password("correct_password")
     session.add(user)
     session.commit()
