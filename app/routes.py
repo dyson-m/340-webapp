@@ -94,9 +94,7 @@ def init_routes(app):
 
         if search_term:
 
-            results = Product.query.filter(
-                sa.or_(Product.name.like(f'%{search_term}%'), 
-                       Product.description.like(f'%{search_term}%'))).all()
+            results = Product.search(search_term)
 
         else:
             results = Product.query.all()
