@@ -16,3 +16,4 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+instance/development.db
