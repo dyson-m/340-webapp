@@ -20,14 +20,16 @@ def test_app():
 def session():
     """Create a temporary database and app context."""
     connection = sqlite3.connect(':memory:')
-    test_app = create_app('app.config.TestingConfig')
-    test_app.app_context().push()
-    db.app = test_app
+    app = create_app('app.config.TestingConfig')
+    context = app.app_context()
+    context.push()
+    db.app = app
     db.create_all()
 
     yield db.session
-
+    db.drop_all()
     connection.close()
+    context.pop()
 
 
 @pytest.fixture(scope='function')
@@ -39,6 +41,7 @@ def client(test_app):
 def user(session):
     """Add a simple test user to the database."""
     user = User(username="test_username", name="test_name", email="test_email", address="test_address")
+    user.set_password("correct_password")
     session.add(user)
     session.commit()
     return user
