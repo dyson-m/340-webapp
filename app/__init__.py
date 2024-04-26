@@ -1,18 +1,23 @@
 from flask import Flask
-from config import Config
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
-app = Flask(__name__)
+from .config import Config
+from .extensions import init_extensions
 
-# Import configurations from our Config class 
-app.config.from_object(Config)
 
-# Initalize Database
-db = SQLAlchemy(app)
+def create_app(config='app.config.DevelopmentConfig'):
+    app = Flask(__name__)
+    app.config.from_object(config)
+    # Initialize Database DB and LoginManager
+    init_extensions(app)
+    from .routes import init_routes
+    init_routes(app)
 
-# Initialize Flask-Login
-login = LoginManager(app)
-login.login_view = 'login'
+    # Use "flask seed" in terminal to add seed data.
+    # This will fill the database with products.
+    @app.cli.command("seed")
+    def seed_db():
+        from .seed import seed
+        seed()
 
-from app import routes  
+    return app

@@ -1,10 +1,11 @@
 from flask_wtf import FlaskForm
+import sqlalchemy as sa
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, ValidationError, EqualTo 
 #from wtforms.validators import Email # requires email-validator to be installed
-import sqlalchemy as sa
-from app import db
-from app.tables import User
+
+from .extensions import db
+from .models import User
 
 
 class LoginForm(FlaskForm):
