@@ -31,6 +31,11 @@ def session():
 
 
 @pytest.fixture(scope='function')
+def client(test_app):
+    return test_app.test_client()
+
+
+@pytest.fixture(scope='function')
 def user(session):
     """Add a simple test user to the database."""
     user = User(username="test_username", name="test_name", email="test_email", address="test_address")
