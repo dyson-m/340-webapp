@@ -1,12 +1,13 @@
-from .forms import LoginForm, RegistrationForm
-from .extensions import db
-from .models import Product, User
-
 from urllib.parse import urlsplit
 
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user
 import sqlalchemy as sa
+
+from .forms import LoginForm, RegistrationForm
+from .extensions import db
+from .models import Product, User
+
 
 def init_routes(app):
     @app.route('/')

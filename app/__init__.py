@@ -1,9 +1,8 @@
+from flask import Flask
+from flask_login import LoginManager
+
 from .config import Config
 from .extensions import init_extensions
-
-from flask import Flask
-
-from flask_login import LoginManager
 
 
 def create_app(config='app.config.DevelopmentConfig'):
@@ -15,6 +14,7 @@ def create_app(config='app.config.DevelopmentConfig'):
     init_routes(app)
 
     # Use "flask seed" in terminal to add seed data.
+    # This will fill the database with products.
     @app.cli.command("seed")
     def seed_db():
         from .seed import seed
