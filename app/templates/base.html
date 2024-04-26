@@ -2,6 +2,7 @@
 <html>
     <head>
       <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       {% if title %}
       <title>{{ title }} - Tinker Buy</title>
       {% else %}
@@ -14,9 +15,11 @@
           <nav>
             <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('catalog') }}">Catalog</a>
+            <a href="{{ url_for('cart') }}"><i class="fas fa-shopping-cart"></i> Cart</a>
             {% if current_user.is_anonymous %}
               <a href="{{ url_for('login') }}">Login</a>
             {% else %}
+
               <a href="{{ url_for('logout') }}">Logout</a>
             {% endif %}
             <form action="{{ url_for('search') }}" method="get" class="search-form">

@@ -90,7 +90,14 @@ def init_routes(app):
         results = Product.query.all()
 
         return render_template('search_results.html', results=results)
+    
+    @app.route('/cart')
+    def cart():
 
+        
+
+        return render_template('cart.html')
+    
     @app.route('/search', methods=['GET', 'POST'])
     def search():
 
