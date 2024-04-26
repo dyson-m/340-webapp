@@ -42,16 +42,20 @@ def init_routes(app):
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
+        
         if current_user.is_authenticated:
             return redirect(url_for('index'))
+        
         form = RegistrationForm()
         if form.validate_on_submit():
-            user = User(username=form.username.data, is_admin = 0) #, email=form.email.data) # Not using email at this time
+            full_address = f"{form.address.data}, {form.city.data}, {form.state.data} {form.zip_code.data}"  
+            user = User(username=form.username.data, name=form.name.data, 
+                    email=form.email.data, address=full_address) 
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
-            flash('Congratulations, you are now a registered user!')
-            return redirect(url_for('login'))
+            flash('Thanks for registering!')
+            return redirect(url_for('index'))  
         return render_template('register.html', title='Register', form=form)
 
     @app.route('/dbtest')
