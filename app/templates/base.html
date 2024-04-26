@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
     <head>
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
       {% if title %}
       <title>{{ title }} - Tinker Buy</title>
       {% else %}
@@ -8,25 +9,32 @@
       {% endif %}
     </head>
     <body>
-        <div>
-          Tinker Buy: 
+        <header>Tinker Buy</header>
+        <nav>
           <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('catalog') }}">Catalog</a>
           {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
           {% else %}
             <a href="{{ url_for('logout') }}">Logout</a>
           {% endif %}
-        </div>
+          <form action="{{ url_for('search') }}" method="get">
+            <input type="text" name="query" placeholder="Search products...">
+            <button type="submit">Search</button>
+        </form>
+        </nav>
         <hr>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-        <ul>
+        <ul class="messages">
             {% for message in messages %}
             <li>{{ message }}</li>
             {% endfor %}
         </ul>
         {% endif %}
         {% endwith %}
-        {% block content %}{% endblock %}
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
     </body>
 </html>

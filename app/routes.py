@@ -78,3 +78,35 @@ def init_routes(app):
         #     print(r.username, r.check_password('mypassword'))
 
         return "hello"
+
+    # test the db
+    @app.route('/catalog')
+    def catalog():
+
+        results = Product.query.all()
+
+        return render_template('search_results.html', results=results)
+
+    @app.route('/search', methods=['GET', 'POST'])
+    def search():
+
+        search_term = request.args.get('query', '')
+
+        if search_term:
+
+            results = Product.query.filter(
+                or_(Product.name.like(f'%{search_term}%'),
+                    Product.description.like(f'%{search_term}%'))).all()
+
+        else:
+            results = Product.query.all()
+
+        return render_template('search_results.html', results=results,
+                               search_term=search_term)
+
+    @app.route('/itmes_page/<int:prod_id>')
+    def items_page(prod_id):
+
+        product = Product.query.get_or_404(prod_id)
+
+        return render_template('items_page.html', results=product)
