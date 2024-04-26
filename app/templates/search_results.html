@@ -11,7 +11,7 @@
         {% for p in results %}
        
         <li class="product-item"> 
-            <a href="{{ url_for('items_page', prod_id=p.prod_id) }}">
+            <a href="{{ url_for('items_page', prod_id=p.id) }}">
                 <div class="product-header">{{ p.name }}</div>
             </a>    
                 <div class="product-detail">In stock: {{ p.stock }}</div>
