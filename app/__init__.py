@@ -2,6 +2,7 @@ from .config import Config
 from .extensions import init_extensions
 
 from flask import Flask
+
 from flask_login import LoginManager
 
 
@@ -12,4 +13,11 @@ def create_app(config='app.config.DevelopmentConfig'):
     init_extensions(app)
     from .routes import init_routes
     init_routes(app)
+
+    # Use "flask seed" in terminal to add seed data.
+    @app.cli.command("seed")
+    def seed_db():
+        from .seed import seed
+        seed()
+
     return app
