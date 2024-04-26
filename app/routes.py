@@ -102,7 +102,7 @@ def init_routes(app):
         return render_template('search_results.html', results=results,
                                search_term=search_term)
 
-    @app.route('/itmes_page/<int:prod_id>')
+    @app.route('/items_page/<int:prod_id>')
     def items_page(prod_id):
 
         product = Product.query.get_or_404(prod_id)
