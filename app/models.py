@@ -30,9 +30,9 @@ class User(UserMixin, db.Model):
         check_password: Checks if a given password matches the user's password.
 
     Example:
-        >>> user = User(name='Bob Tinker', email='btinker@gmail.com',
+        >>> user = User(username='BT', name='Bob Tinker', email='btinker@gmail.com',
         >>>             address='123 Main St.')
-        >>> admin = User(name='Alice Tinker', email="atinker@gamil.com",
+        >>> admin = User(username='AT', name='Alice Tinker', email="atinker@gamil.com",
         >>>              address="123", admin=True)
     """
     id = db.Column(db.Integer, primary_key=True)
@@ -57,7 +57,7 @@ class User(UserMixin, db.Model):
             User: The user with the given email address.
 
         Example:
-            >>> user = User(name='Bob Tinker', email="btinker@gmail.com",
+            >>> user = User(username='BT', name='Bob Tinker', email="btinker@gmail.com",
             >>>             address='123 Main St.')
             >>> user.get_user_by_email('btinker@gmail.com')
             <User Bob Tinker>
@@ -71,7 +71,7 @@ class User(UserMixin, db.Model):
             password (str): The user's plaintext password.
 
         Example:
-            >>> user = User(name=..., email=..., address=...)
+            >>> user = User(username=..., name=..., email=..., address=...)
             >>> user.set_password('password123')
         """
         self.password_hash = generate_password_hash(password)
@@ -220,7 +220,7 @@ class Cart(db.Model):
         get_total_price: Calculates the total price of all items in the cart.
 
     Example:
-        >>> user = User(name=..., email=..., address=...)
+        >>> user = User(username=..., name=..., email=..., address=...)
         >>> cart = Cart(user=user)
         >>> product = Product(name='TV', description='A small TV',
         >>>                   price=100.99, stock=5)
@@ -238,7 +238,7 @@ class Cart(db.Model):
         """Removes all items from the cart.
 
         Example:
-            >>> user = User(name=..., email=..., address=...)
+            >>> user = user = User(username=..., name=..., email=..., address=...)
             >>> cart = Cart(user=user)
             >>> product = Product(name='TV', description='A small TV',
             >>>                   price=100.99, stock=5)
@@ -264,7 +264,7 @@ class Cart(db.Model):
             quantity (int): The quantity of the product to add to the cart.
 
         Example:
-            >>> user = User(name=..., email=..., address=...)
+            >>> user = User(username=..., name=..., email=..., address=...)
             >>> cart = Cart(user=user)
             >>> product = Product(name='TV', description='A small TV',
             >>>                   price=100.99, stock=5)
@@ -291,7 +291,7 @@ class Cart(db.Model):
             product_id (int): The id of the product to remove from the cart.
 
         Example:
-            >>> user = User(name=..., email=..., address=...)
+            >>> user = User(username=..., name=..., email=..., address=...)
             >>> cart = Cart(user=user)
             >>> product = Product(name='TV', description='A small TV',
             >>>                   price=100.99, stock=5)
@@ -316,7 +316,7 @@ class Cart(db.Model):
             float: The total price of all items in the cart.
 
         Example:
-            >>> user = User(name=..., email=..., address=...)
+            >>> user = User(username=..., name=..., email=..., address=...)
             >>> cart = Cart(user=user)
             >>> product = Product(name='TV', description='A small TV',
             >>>                   price=100.99, stock=5)

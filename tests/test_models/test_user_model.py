@@ -8,12 +8,13 @@ from app.models import Cart, User
 class TestUserModel:
     def test_create_user(self, session, user):
         fetched_user = user.query.filter(User.email == user.email).first()
+        assert fetched_user.username == user.username
         assert fetched_user.name == user.name
         assert fetched_user.email == user.email
         assert fetched_user.address == user.address
 
     def test_user_unique_email(self, session, user):
-        user2 = User(name=user.name, email=user.email, address=user.address)
+        user2 = User(username="username", name=user.name, email=user.email, address=user.address)
         session.add(user2)
         with pytest.raises(IntegrityError):
             session.commit()
@@ -61,7 +62,7 @@ class TestUserModel:
 
         session.delete(user)
 
-        new_user = User(name="new_user", email="new_email",
+        new_user = User(username="u", name="new_user", email="new_email",
                         address="new_address")
         session.add(new_user)
         session.commit()
@@ -71,7 +72,7 @@ class TestUserModel:
         session.delete(new_user)
         session.commit()
 
-        new_user2 = User(name="new_user2", email="new_email2",
+        new_user2 = User(username="s", name="new_user2", email="new_email2",
                             address="new_address2")
         session.add(new_user2)
         session.commit()

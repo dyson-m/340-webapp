@@ -1,7 +1,8 @@
 import pytest
 import sqlite3
 
-from app import create_app, db
+from app import create_app
+from app.extensions import db
 from app.models import Cart, Order, Product, User
 
 
@@ -17,6 +18,7 @@ def test_app():
 
 @pytest.fixture(scope='function')
 def session():
+    """Create a temporary database and app context."""
     connection = sqlite3.connect(':memory:')
     test_app = create_app('app.config.TestingConfig')
     test_app.app_context().push()
@@ -30,7 +32,8 @@ def session():
 
 @pytest.fixture(scope='function')
 def user(session):
-    user = User(name="test_name", email="test_email", address="test_address")
+    """Add a simple test user to the database."""
+    user = User(username="test_username", name="test_name", email="test_email", address="test_address")
     session.add(user)
     session.commit()
     return user
@@ -38,7 +41,8 @@ def user(session):
 
 @pytest.fixture(scope='function')
 def admin(session):
-    admin = User(name="admin", email="admin_email", address="admin_address",
+    """Add an admin test user to the database."""
+    admin = User(username="test_admin_username", name="admin", email="admin_email", address="admin_address",
                  is_admin=True)
     session.add(admin)
     session.commit()
@@ -47,6 +51,7 @@ def admin(session):
 
 @pytest.fixture(scope='function')
 def cart(user, session):
+    """Add a cart for the user to the database."""
     cart = Cart(user=user)
     session.add(cart)
     session.commit()
@@ -54,6 +59,7 @@ def cart(user, session):
 
 @pytest.fixture(scope='function')
 def product(session):
+    """Add a product to the database."""
     product = Product(name="test_product", description="test_description",
                       price=5.99, stock=100)
     session.add(product)
@@ -63,6 +69,7 @@ def product(session):
 
 @pytest.fixture(scope='function')
 def products(session):
+    """Add two products to the database."""
     product_1 = Product(name="test_product_1", description="test_description_1",
                         price=5.99, stock=100)
     product_2 = Product(name="test_product_2", description="test_description_2",
@@ -74,12 +81,14 @@ def products(session):
 
 @pytest.fixture(scope='function')
 def cart_item(session, cart, product):
+    """Add a product to the cart."""
     cart.add_product(product.id)
     session.commit()
     return cart.items[0]
 
 @pytest.fixture(scope='function')
 def order(session, user, cart, products):
+    """Add multiple products to the cart and create an order."""
     for product in products:
         cart.add_product(product.id)
     order = Order.create_order_from_cart(cart)
@@ -89,4 +98,5 @@ def order(session, user, cart, products):
 
 @pytest.fixture(scope='function')
 def order_item(session, order):
+    """Provide a single order item."""
     return order.items[0]
