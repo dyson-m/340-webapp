@@ -9,14 +9,20 @@
         <div>{{ form.card_type.label }} {{ form.card_type() }}</div>
         <div>{{ form.card_number.label }} {{ form.card_number() }}</div>
         <div>{{ form.exp_month.label }} {{ form.exp_month() }}</div>
-        <div>{{ form.exp_year.label }} {{ form.expr_year() }}</div>
+            {% for error in form.exp_month.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        <div>{{ form.exp_year.label }} {{ form.exp_year() }}</div>
+            {% for error in form.exp_year.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         <div>{{ form.cvv.label }} {{ form.cvv() }}</div>
         <div>{{ form.submit() }}</div>
     </form>
     <h2>Your Order</h2>
     <ul>
-        {% for item in cart %}
-            <li>{{ item.name }} - ${{ item.price }} - x{{ item.quantity }}</li>
+        {% for item in cart.items %}
+            <li>{{ item.product.name }} - ${{ item.product.price }} - x{{ item.quantity }}</li>
         {% endfor %}
     </ul>
     <div>Total: ${{ cart.get_total_price() }}</div>

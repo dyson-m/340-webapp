@@ -72,9 +72,9 @@ class CheckoutForm(FlaskForm):
     def validate_exp_month(self, exp_month):
         """Validate the expiration date has not passed."""
         # Expired earlier this year.
-        if (self.exp_year <= datetime.now().year and
-                exp_month < datetime.now().month):
+        if (int(self.exp_year.data) <= datetime.now().year and
+                int(exp_month.data) < datetime.now().month):
             raise ValidationError('Card has expired')
         # Expired a previous year.
-        if self.exp_year < datetime.now().year:
+        if int(self.exp_year.data) < datetime.now().year:
             raise ValidationError('Card has expired')

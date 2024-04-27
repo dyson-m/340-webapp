@@ -157,7 +157,7 @@ def init_routes(app):
                         headers={'Content-Disposition':
                                  'attachment; filename=orders.csv'})
 
-    @app.route('/checkout')
+    @app.route('/checkout', methods=['GET', 'POST'])
     @login_required
     def checkout():
         """Checkout page for the user's cart"""
