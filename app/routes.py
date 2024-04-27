@@ -1,10 +1,10 @@
 from urllib.parse import urlsplit
 
 from flask import render_template, flash, redirect, url_for, request
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 import sqlalchemy as sa
 
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, UpdateProfileForm
 from .extensions import db
 from .models import Product, User
 
@@ -108,3 +108,21 @@ def init_routes(app):
         product = Product.query.get_or_404(prod_id)
 
         return render_template('items_page.html', results=product)
+
+    @app.route('/update_profile', methods=['GET', 'POST'])
+    @login_required
+    def update_profile():
+        form = UpdateProfileForm()
+        if form.validate_on_submit():
+            current_user.name = form.name.data
+            current_user.email = form.email.data
+            current_user.address = form.address.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect(url_for('update_profile'))
+        elif request.method == 'GET':
+            form.name.data = current_user.name
+            form.email.data = current_user.email
+            form.address.data = current_user.address
+        return render_template('update_profile.html',
+                               title='Update Profile', form=form)
