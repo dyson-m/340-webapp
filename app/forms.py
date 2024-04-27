@@ -1,7 +1,10 @@
+from datetime import datetime
+
 from flask_wtf import FlaskForm
 import sqlalchemy as sa
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, ValidationError, EqualTo ,Regexp, Email
+from wtforms.validators import DataRequired, ValidationError, EqualTo, \
+    Regexp, Email, Length
 from wtforms.fields.choices import SelectField
 
 from .extensions import db
@@ -13,7 +16,8 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
-    
+
+
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     name = StringField('Name', validators=[DataRequired()])
@@ -23,8 +27,8 @@ class RegistrationForm(FlaskForm):
     zip_code = StringField('ZIP Code', validators=[DataRequired(), Regexp('^\d{5}$', message="Enter a valid 5-digit ZIP Code")])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    password2 = PasswordField('Repeat Password',
+        validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
 
     def validate_username(self, username): # Custom validator to prevent duplicate usernames
@@ -52,3 +56,34 @@ class UpdateProfileForm(FlaskForm):
 class DeleteUserForm(FlaskForm):
     user = SelectField('User', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Delete Account')
+
+
+class CheckoutForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    address = StringField('Address', validators=[DataRequired()])
+    card_type = SelectField('Card Type',
+                            choices=[('visa', 'Visa'), ('mc', 'Mastercard'),
+                                     ('amex', 'American Express'),
+                                     ('disc', 'Discover')],
+                            validators=[DataRequired()])
+    card_number = StringField('Card Number', validators=[DataRequired(),
+                                                         Length(min=16,
+                                                                max=16)])
+    months = [(str(i), str(i)) for i in range(1, 13)]
+    years = [(str(i), str(i)) for i in range(2024, 2034)]
+    exp_month = SelectField("Expiration Month", choices=months,
+                            validators=[DataRequired()])
+    exp_year = SelectField("Expiration Year", choices=years,
+                           validators=[DataRequired()])
+    cvv = StringField('CVV', validators=[DataRequired(), Length(min=3, max=3)])
+    submit = SubmitField('Submit Order')
+
+    def validate_exp_month(self, exp_month):
+        """Validate the expiration date has not passed."""
+        # Expired earlier this year.
+        if (int(self.exp_year.data) <= datetime.now().year and
+                int(exp_month.data) < datetime.now().month):
+            raise ValidationError('Card has expired')
+        # Expired a previous year.
+        if int(self.exp_year.data) < datetime.now().year:
+            raise ValidationError('Card has expired')

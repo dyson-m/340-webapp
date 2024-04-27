@@ -4,7 +4,7 @@ from flask import Response, render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_required, login_user, logout_user
 import sqlalchemy as sa
 
-from .forms import DeleteUserForm, LoginForm, RegistrationForm, \
+from .forms import CheckoutForm, DeleteUserForm, LoginForm, RegistrationForm, \
     UpdateProfileForm
 from .extensions import db
 from .models import Order, Product, User, Cart, CartItem
@@ -220,3 +220,42 @@ def init_routes(app):
         return Response(data, mimetype='text/csv',
                         headers={'Content-Disposition':
                                  'attachment; filename=orders.csv'})
+
+
+    @app.route('/checkout', methods=['GET', 'POST'])
+    @login_required
+    def checkout():
+        """Checkout page for the user's cart"""
+        user = current_user
+        cart = Cart.query.filter_by(user_id=user.id).first()
+        # If there's no cart or an empty cart, redirect.
+        if not cart or not cart.items:
+            flash('Your cart is empty.')
+            return redirect(url_for('catalog'))
+        form = CheckoutForm(obj=user)
+        if form.validate_on_submit():
+            # Payment processing would occur here...
+            try:
+                order = Order.create_order_from_cart(cart)
+                flash('Order placed successfully.')
+                return redirect(url_for('order_success'))
+            # If product was out of stock...
+            except ValueError as e:
+                flash(str(e))
+                return redirect(url_for('checkout'))
+            # If something went wrong with SQL...
+            except RuntimeError as e:
+                flash("An unexpected error occurred. Please try again.")
+                return redirect(url_for('checkout'))
+        return render_template('checkout.html',
+                               title='Checkout',
+                               form=form,
+                               cart=cart)
+
+
+    @app.route('/order_success')
+    @login_required
+    def order_success():
+        """Page for displaying a successful order."""
+        return render_template('order_success.html',
+                               title='Order Success')
