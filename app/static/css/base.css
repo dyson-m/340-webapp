@@ -56,15 +56,29 @@ nav a:hover {
     color: white;
 }
 
+.flash-messages {
+    position: fixed;
+    top: 70px; 
+    width: 100%;
+    text-align: center;
+    z-index: 1000;
+}
+
 .messages {
-    list-style: none;
+    text-align: center;
+    margin: 0 auto;
     padding: 10px;
-    background-color: #ffdddd;
-    border: 1px solid #ffcccc;
+    list-style: none;
+    background-color: #f8d7da; 
+    color: #721c24; 
+    border: 1px solid #f5c6cb; 
+    border-radius: 5px;
+    width: 90%;
+    max-width: 600px;
 }
 
 .messages li {
-    margin-bottom: 5px;
+    margin: 5px 0;
 }
 
 .content {
