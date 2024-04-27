@@ -1,30 +1,89 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+<div class="form-container">
     <h1>Register</h1>
-    <form action="" method="post">
+    <form action="" method="post" class="form">
         {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-            {% for error in form.password.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password2.label }}<br>
-            {{ form.password2(size=32) }}<br>
-            {% for error in form.password2.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
+        <div class="form-columns">
+
+            <div class="form-column">
+                <h2>Personal Information</h2>
+                <div class="form-group">
+                    {{ form.name.label }}
+                    {{ form.name(size=32, class_='form-control') }}
+                    {% for error in form.name.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.address.label }}
+                    {{ form.address(size=32, class_='form-control') }}
+                    {% for error in form.address.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.city.label }}
+                    {{ form.city(size=32, class_='form-control') }}
+                    {% for error in form.city.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.state.label }}
+                    {{ form.state(size=32, class_='form-control') }}
+                    {% for error in form.state.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.zip_code.label }}
+                    {{ form.zip_code(size=32, class_='form-control') }}
+                    {% for error in form.zip_code.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-column">
+                <h2>User Information</h2>
+                <div class="form-group">
+                    {{ form.username.label }}
+                    {{ form.username(size=32, class_='form-control') }}
+                    {% for error in form.username.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label }}
+                    {{ form.email(size=32, class_='form-control') }}
+                    {% for error in form.email.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label }}
+                    {{ form.password(size=32, class_='form-control') }}
+                    {% for error in form.password.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.password2.label }}
+                    {{ form.password2(size=32, class_='form-control') }}
+                    {% for error in form.password2.errors %}
+                    <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            
+        </div>
+        <div class="form-group">
+            {{ form.submit(class_='btn btn-primary') }}
+        </div>
     </form>
+</div>
 {% endblock %}

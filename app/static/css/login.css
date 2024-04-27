@@ -1,0 +1,84 @@
+
+.sign-in-container {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 320px;  
+    margin: auto;
+}
+
+
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-control:focus {
+    border-color: #0056b3;
+    outline: none;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.error {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.form-checkbox {
+    margin-right: 10px;
+}
+
+.checkbox-label {
+    margin-bottom: 0;  
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 12px;
+    color: white;
+    text-transform: uppercase;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

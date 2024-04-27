@@ -2,6 +2,7 @@
 <html>
     <head>
       <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
       {% if title %}
       <title>{{ title }} - Tinker Buy</title>
       {% else %}
@@ -13,6 +14,7 @@
         <nav>
           <a href="{{ url_for('index') }}">Home</a>
           <a href="{{ url_for('catalog') }}">Catalog</a>
+          <a href="{{ url_for('cart') }}"><i class="fas fa-shopping-cart"></i> Cart</a>
           {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
           {% else %}
@@ -22,20 +24,21 @@
             {% endif %}
             <a href="{{ url_for('logout') }}">Logout</a>
           {% endif %}
-          <form action="{{ url_for('search') }}" method="get">
-            <input type="text" name="query" placeholder="Search products...">
-            <button type="submit">Search</button>
+            <form action="{{ url_for('search') }}" method="get" class="search-form">
+              <input type="text" name="query" placeholder="Search products..." class="search-input">
+              <button type="submit" class="search-button">Search</button>
+            </form>
         </form>
         </nav>
         <hr>
         {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+          {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li>{{ message }}</li>
+              {% endfor %}
+          </ul>
+          {% endif %}
         {% endwith %}
         <div class="content">
             {% block content %}{% endblock %}

@@ -7,7 +7,7 @@ import sqlalchemy as sa
 from .forms import CheckoutForm, DeleteUserForm, LoginForm, RegistrationForm, \
     UpdateProfileForm
 from .extensions import db
-from .models import Cart, Order, Product, User
+from .models import Order, Product, User, Cart, CartItem
 from .utils import admin_required
 
 
@@ -44,16 +44,20 @@ def init_routes(app):
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
+        
         if current_user.is_authenticated:
             return redirect(url_for('index'))
+        
         form = RegistrationForm()
         if form.validate_on_submit():
-            user = User(username=form.username.data, is_admin = 0) #, email=form.email.data) # Not using email at this time
+            full_address = f"{form.address.data}, {form.city.data}, {form.state.data} {form.zip_code.data}"  
+            user = User(username=form.username.data, name=form.name.data, 
+                    email=form.email.data, address=full_address) 
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
-            flash('Congratulations, you are now a registered user!')
-            return redirect(url_for('login'))
+            flash('Thanks for registering!')
+            return redirect(url_for('index'))  
         return render_template('register.html', title='Register', form=form)
 
     @app.route('/dbtest')
@@ -88,7 +92,9 @@ def init_routes(app):
         results = Product.query.all()
 
         return render_template('search_results.html', results=results)
-
+    
+   
+    
     @app.route('/search', methods=['GET', 'POST'])
     def search():
 
@@ -110,6 +116,64 @@ def init_routes(app):
         product = Product.query.get_or_404(prod_id)
 
         return render_template('items_page.html', results=product)
+
+    @app.route('/cart')
+    def cart():
+        cart = None  
+        if current_user.is_authenticated:
+           
+            user_id = current_user.id   
+            cart = Cart.query.filter_by(user_id=user_id).first_or_404()
+            
+        if not cart:
+            cart = Cart()  
+            cart.items = [] 
+        return render_template('cart.html', cart=cart)   
+      
+    
+    @app.route('/add_to_cart/<int:product_id>', methods=['POST'])
+    def add_to_cart(product_id):
+        quantity = int(request.form['quantity'])
+        user_id = current_user.id  
+
+       
+        cart = Cart.query.filter_by(user_id=user_id).first()
+        if not cart:
+            user = User.query.get(user_id)
+            cart = Cart(user=user)
+            db.session.add(cart)
+
+    
+        cart.add_product(product_id, quantity)
+        db.session.commit()
+        flash('Product added to cart successfully!')
+        return redirect(url_for('cart'))
+  
+    @app.route('/remove_from_cart/<int:product_id>', methods=['POST'])
+    def remove_from_cart(product_id):
+        user_id = current_user.id  
+        cart = Cart.query.filter_by(user_id=user_id).first()
+        if cart:
+            cart.remove_product(product_id)
+            db.session.commit()
+            flash('Product removed from cart successfully!')
+        else:
+            flash('No cart found!', 'error')
+        return redirect(url_for('cart'))
+    
+    
+    @app.route('/update_cart_item/<int:item_id>', methods=['POST'])
+    def update_cart_item(item_id):
+        quantity = int(request.form['quantity'])
+        cart_item = CartItem.query.get_or_404(item_id)
+        if quantity > 0:
+            cart_item.update_quantity(quantity)
+            flash('Quantity updated successfully!')
+        else:
+            db.session.delete(cart_item)
+            db.session.commit()
+            flash('Item removed from the cart!')
+        return redirect(url_for('cart'))
 
     @app.route('/profile', methods=['GET', 'POST'])
     @login_required

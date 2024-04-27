@@ -72,7 +72,13 @@ def test_register_success(client):
     response = client.post('/register',
                            data=dict(username='new_username',
                                      password='new_password',
-                                     password2='new_password'),
+                                     password2='new_password',
+                                     name="name",
+                                     address="address",
+                                     city="city",
+                                     state="state",
+                                     zip_code="12345",
+                                     email="email@example.com"),
                            follow_redirects=True)
     new_user = User.query.filter_by(username='new_username').first()
     assert new_user is not None
