@@ -52,8 +52,10 @@ def user(session):
 @pytest.fixture(scope='function')
 def admin(session):
     """Add an admin test user to the database."""
-    admin = User(username="test_admin_username", name="admin", email="admin_email", address="admin_address",
+    admin = User(username="test_admin_username", name="admin",
+                 email="admin_email", address="admin_address",
                  is_admin=True)
+    admin.set_password("password")
     session.add(admin)
     session.commit()
     return admin

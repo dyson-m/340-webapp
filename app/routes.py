@@ -131,15 +131,15 @@ def init_routes(app):
                                title='Update Profile', form=form)
 
     @app.route('/admin', methods=['GET', 'POST'])
-    @login_required
     @admin_required
+    @login_required
     def admin():
         """Page for deleting users and printing sales report."""
         form = DeleteUserForm()
         form.user.choices = [(user.id, user.username)
                              for user in User.query.all()]
         if form.validate_on_submit():
-            user = User.query.get(form.user.data)
+            user = db.session.get(User, form.user.data)
             db.session.delete(user)
             db.session.commit()
             flash('User has been deleted.')
@@ -148,8 +148,8 @@ def init_routes(app):
                                title='Admin Dashboard', form=form)
 
     @app.route('/admin/sales_report')
-    @login_required
     @admin_required
+    @login_required
     def sales_report():
         """Returns a CSV file for all orders."""
         data = Order.get_all_orders_in_csv_format()

@@ -1,6 +1,6 @@
 ﻿from functools import wraps
 
-from flask import flash, redirect, url_for
+from flask import flash, jsonify, make_response, redirect, url_for
 from flask_login import current_user
 
 
@@ -10,10 +10,12 @@ def admin_required(inner):
     @wraps(inner)
     def wrapped(*args, **kwargs):
         if not current_user.is_authenticated:
-            flash('You must be logged in as an admin to access this page.')
-            return redirect(url_for('login'))
+            # No authorization, return 401 Unauthorized.
+            return make_response(jsonify(
+                {'error': 'Unauthorized access'}), 401)
         if not current_user.is_admin:
-            flash('You must be an admin to access this page.')
-            return redirect(url_for('index'))
+            # Forbidden to this user, return 403 Forbidden.
+            return make_response(jsonify(
+                {'error': 'Access forbidden'}), 403)
         return inner(*args, **kwargs)
     return wrapped
