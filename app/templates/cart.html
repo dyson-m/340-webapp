@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+<div class="cart-container">
+    <h1>Your Cart</h1>
+    
+    {% if cart.items%}
+    <ul class="cart-items">
+        {% for item in cart.items %}
+        <li class="cart-item">
+            <div class="item-info">
+                <span class="item-name">{{ item.product.name }}</span>
+                <span class="item-price">${{ '%.2f' | format(item.product.price) }} each</span>
+            </div>
+            <form action="{{ url_for('update_cart_item', item_id=item.id) }}" method="post" class="item-form">
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99" class="quantity-input">
+                <button type="submit" class="btn btn-update">Update</button>
+                <button formaction="{{ url_for('remove_from_cart', product_id=item.product.id) }}" type="submit" class="btn btn-danger">Remove</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    <div class="cart-summary">
+        <p class="total-price">Total: ${{ '%.2f' | format(cart.get_total_price()) }}</p>
+    </div>
+    {% else %}
+    <p>Your cart is currently empty.</p>
+    {% endif %}
+</div>
+{% endblock %}
