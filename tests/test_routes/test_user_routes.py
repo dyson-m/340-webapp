@@ -79,3 +79,30 @@ def test_register_success(client):
     assert response.status_code == 200
     assert b'Login' in response.data
 
+
+def test_profile_route(session, client, user):
+    """Test profile can be accessed for a user."""
+    with client:
+        client.post('/login', data=dict(username='test_username',
+                                        password='correct_password'),
+                    follow_redirects=True)
+        response = client.get('/profile', follow_redirects=True)
+        assert response.status_code == 200
+        assert b'Update Profile' in response.data
+
+
+def test_profile_update(session, client, user):
+    """Test a profile can be updated."""
+    with client:
+        client.post('/login', data=dict(username='test_username',
+                                        password='correct_password'),
+                    follow_redirects=True)
+        response = client.post('/profile', data=dict(name='new_name',
+                                                     email='new_email',
+                                                     address='new_address'),
+                               follow_redirects=True)
+        assert response.status_code == 200
+        assert b'Your changes have been saved.' in response.data
+        assert user.name == 'new_name'
+        assert user.email == 'new_email'
+        assert user.address == 'new_address'
