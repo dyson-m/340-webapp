@@ -4,6 +4,7 @@ from datetime import datetime
 
 from flask_login import UserMixin
 from sqlalchemy import or_
+from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .extensions import db, login_manager
@@ -426,10 +427,17 @@ class Order(db.Model):
 
         Static method meant for directly converting an existing cart into an
         order. This method would be called once the purchase is completed and
-        will result a new order being created in the database.
+        will result a new order being created in the database. This will also
+        update the stock of each product in the order, and clear the user's
+        cart. If there isn't enough stock or an error occurs, the transaction
+        will be rolled back.
 
         Args:
             cart (Cart): The user's cart to convert into an order.
+
+        Exceptions:
+            ValueError: If there is not enough stock for a product.
+            RuntimeError: If the transaction fails for any reason.
 
         Returns:
             Order: The newly created order.
@@ -443,20 +451,46 @@ class Order(db.Model):
             >>> order = Order.create_order_from_cart(cart)
             >>> order.items[0].name
             'TV'
+            >>> product.stock
+            3
+            >>> len(cart.items)
+            0
         """
         order = Order(user_id=cart.user_id, order_date=datetime.now())
-
-        for cart_item in cart.items:
-            order_item = OrderItem(product_id=cart_item.product_id,
-                                   quantity=cart_item.quantity,
-                                   price=cart_item.product.price)
-            order.items.append(order_item)
         db.session.add(order)
-        db.session.commit()
+        try:
+            for cart_item in cart.items:
+                product = cart_item.product
+                # If there isn't enough stock, rollback the transaction.
+                if product.stock < cart_item.quantity:
+                    db.session.rollback()
+                    raise ValueError('Not enough stock for product')
+                # Update stock.
+                product.subtract_stock(cart_item.quantity)
+                # Create orders
+                order_item = OrderItem(product_id=product.id,
+                                       quantity=cart_item.quantity,
+                                       price=product.price)
+                order.items.append(order_item)
+            # Clear cart now that everything is in the order.
+            cart.clear_cart()
+            db.session.commit()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise RuntimeError("Transaction failed. Please try again.")
         return order
 
     @staticmethod
     def get_all_orders_in_csv_format() -> str:
+        """Returns all orders in CSV format.
+
+        This creates a string for a CSV file containing all orders in the
+        database with one product per line. The columns are order_id, user_id,
+        order_date, product_id, quantity, and price.
+
+        Returns:
+            str: A string containing all orders in CSV format.
+        """
         orders = Order.query.all()
         result = 'order_id,user_id,order_date,product_id,quantity,price\n'
         for order in orders:
