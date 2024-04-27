@@ -112,7 +112,8 @@ def init_routes(app):
     @app.route('/update_profile', methods=['GET', 'POST'])
     @login_required
     def update_profile():
-        form = UpdateProfileForm()
+        """Page for updating the user's name, email, and address."""
+        form = UpdateProfileForm(obj=current_user)
         if form.validate_on_submit():
             current_user.name = form.name.data
             current_user.email = form.email.data
