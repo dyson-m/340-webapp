@@ -109,10 +109,10 @@ def init_routes(app):
 
         return render_template('items_page.html', results=product)
 
-    @app.route('/update_profile', methods=['GET', 'POST'])
+    @app.route('/profile', methods=['GET', 'POST'])
     @login_required
-    def update_profile():
-        """Page for updating the user's name, email, and address."""
+    def profile():
+        """Page for viewing/updating the user's name, email, and address."""
         form = UpdateProfileForm(obj=current_user)
         if form.validate_on_submit():
             current_user.name = form.name.data
@@ -120,10 +120,10 @@ def init_routes(app):
             current_user.address = form.address.data
             db.session.commit()
             flash('Your changes have been saved.')
-            return redirect(url_for('update_profile'))
+            return redirect(url_for('profile'))
         elif request.method == 'GET':
             form.name.data = current_user.name
             form.email.data = current_user.email
             form.address.data = current_user.address
-        return render_template('update_profile.html',
+        return render_template('profile.html',
                                title='Update Profile', form=form)
