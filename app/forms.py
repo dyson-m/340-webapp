@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_wtf import FlaskForm
 import sqlalchemy as sa
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
@@ -66,3 +68,13 @@ class CheckoutForm(FlaskForm):
                            validators=[DataRequired()])
     cvv = StringField('CVV', validators=[DataRequired(), Length(min=3, max=3)])
     submit = SubmitField('Submit Order')
+
+    def validate_exp_month(self, exp_month):
+        """Validate the expiration date has not passed."""
+        # Expired earlier this year.
+        if (self.exp_year <= datetime.now().year and
+                exp_month < datetime.now().month):
+            raise ValidationError('Card has expired')
+        # Expired a previous year.
+        if self.exp_year < datetime.now().year:
+            raise ValidationError('Card has expired')
