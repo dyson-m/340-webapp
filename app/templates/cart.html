@@ -24,6 +24,9 @@
     <div class="cart-summary">
         <p class="total-price">Total: ${{ '%.2f' | format(cart.get_total_price()) }}</p>
     </div>
+    <form action="/checkout">
+        <button type="submit" class="btn btn-update">Checkout</button>
+    </form>
     {% else %}
     <p>Your cart is currently empty.</p>
     {% endif %}
