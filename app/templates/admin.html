@@ -1,0 +1,21 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Admin Dashboard</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.user.label }}<br>
+            {{ form.user(class='form-control')}}
+            {% for error in form.user.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <form action="{{ url_for('sales_report') }}" method="get">
+        <button type="submit">Download Sales Report</button>
+    </form>
+{% endblock %}

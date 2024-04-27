@@ -6,7 +6,7 @@ from app.extensions import db
 from app.models import Cart, Order, Product, User
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def test_app():
     """Create a test Flask app."""
     app = create_app('app.config.TestingConfig')
@@ -20,20 +20,30 @@ def test_app():
 def session():
     """Create a temporary database and app context."""
     connection = sqlite3.connect(':memory:')
-    test_app = create_app('app.config.TestingConfig')
-    test_app.app_context().push()
-    db.app = test_app
+    app = create_app('app.config.TestingConfig')
+    context = app.app_context()
+    context.push()
+    db.app = app
     db.create_all()
 
     yield db.session
-
+    db.drop_all()
     connection.close()
+    context.pop()
+
+
+@pytest.fixture(scope='function')
+def client(test_app):
+    with test_app.app_context():
+        yield test_app.test_client()
 
 
 @pytest.fixture(scope='function')
 def user(session):
     """Add a simple test user to the database."""
-    user = User(username="test_username", name="test_name", email="test_email", address="test_address")
+    user = User(username="test_username", name="test_name", email="test_email",
+                address="test_address")
+    user.set_password("correct_password")
     session.add(user)
     session.commit()
     return user
@@ -42,8 +52,10 @@ def user(session):
 @pytest.fixture(scope='function')
 def admin(session):
     """Add an admin test user to the database."""
-    admin = User(username="test_admin_username", name="admin", email="admin_email", address="admin_address",
+    admin = User(username="test_admin_username", name="admin",
+                 email="admin_email", address="admin_address",
                  is_admin=True)
+    admin.set_password("password")
     session.add(admin)
     session.commit()
     return admin

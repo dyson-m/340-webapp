@@ -1,12 +1,14 @@
 from urllib.parse import urlsplit
 
-from flask import render_template, flash, redirect, session, url_for, request
-from flask_login import current_user, login_user, logout_user
+from flask import Response, render_template, flash, redirect, url_for, request
+from flask_login import current_user, login_required, login_user, logout_user
 import sqlalchemy as sa
 
-from .forms import LoginForm, RegistrationForm
+from .forms import DeleteUserForm, LoginForm, RegistrationForm, \
+    UpdateProfileForm
 from .extensions import db
-from .models import Product, User,Cart,CartItem
+from .models import Order, Product, User, Cart, CartItem
+from .utils import admin_required
 
 
 def init_routes(app):
@@ -100,9 +102,7 @@ def init_routes(app):
 
         if search_term:
 
-            results = Product.query.filter(
-                sa.or_(Product.name.like(f'%{search_term}%'), 
-                       Product.description.like(f'%{search_term}%'))).all()
+            results = Product.search(search_term)
 
         else:
             results = Product.query.all()
@@ -110,14 +110,13 @@ def init_routes(app):
         return render_template('search_results.html', results=results,
                                search_term=search_term)
 
-    @app.route('/itmes_page/<int:prod_id>')
+    @app.route('/items_page/<int:prod_id>')
     def items_page(prod_id):
 
         product = Product.query.get_or_404(prod_id)
 
         return render_template('items_page.html', results=product)
-    
-    
+
     @app.route('/cart')
     def cart():
         cart = None  
@@ -175,3 +174,49 @@ def init_routes(app):
             db.session.commit()
             flash('Item removed from the cart!')
         return redirect(url_for('cart'))
+
+    @app.route('/profile', methods=['GET', 'POST'])
+    @login_required
+    def profile():
+        """Page for viewing/updating the user's name, email, and address."""
+        form = UpdateProfileForm(obj=current_user)
+        if form.validate_on_submit():
+            current_user.name = form.name.data
+            current_user.email = form.email.data
+            current_user.address = form.address.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect(url_for('profile'))
+        elif request.method == 'GET':
+            form.name.data = current_user.name
+            form.email.data = current_user.email
+            form.address.data = current_user.address
+        return render_template('profile.html',
+                               title='Update Profile', form=form)
+
+    @app.route('/admin', methods=['GET', 'POST'])
+    @admin_required
+    @login_required
+    def admin():
+        """Page for deleting users and printing sales report."""
+        form = DeleteUserForm()
+        form.user.choices = [(user.id, user.username)
+                             for user in User.query.all()]
+        if form.validate_on_submit():
+            user = db.session.get(User, form.user.data)
+            db.session.delete(user)
+            db.session.commit()
+            flash('User has been deleted.')
+            return redirect(url_for('admin'))
+        return render_template('admin.html',
+                               title='Admin Dashboard', form=form)
+
+    @app.route('/admin/sales_report')
+    @admin_required
+    @login_required
+    def sales_report():
+        """Returns a CSV file for all orders."""
+        data = Order.get_all_orders_in_csv_format()
+        return Response(data, mimetype='text/csv',
+                        headers={'Content-Disposition':
+                                 'attachment; filename=orders.csv'})

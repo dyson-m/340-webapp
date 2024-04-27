@@ -112,7 +112,7 @@ class User(UserMixin, db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return f'<User {self.name}>'
+        return f'<User {self.username} id={self.id}>'
 
 
 @login_manager.user_loader
@@ -197,7 +197,7 @@ class Product(db.Model):
         self.stock -= quantity
 
     def __repr__(self):
-        return f'<Product {self.name}>'
+        return f'<Product id={self.id} name={self.name}>'
 
 
 class Cart(db.Model):
@@ -238,7 +238,7 @@ class Cart(db.Model):
         """Removes all items from the cart.
 
         Example:
-            >>> user = user = User(username=..., name=..., email=..., address=...)
+            >>> user = User(username=..., name=..., email=..., address=...)
             >>> cart = Cart(user=user)
             >>> product = Product(name='TV', description='A small TV',
             >>>                   price=100.99, stock=5)
@@ -327,7 +327,7 @@ class Cart(db.Model):
         return sum(item.quantity * item.product.price for item in self.items)
 
     def __repr__(self):
-        return f'<Cart {self.id}>'
+        return f'<Cart id={self.id} user={self.user}>'
 
 
 class CartItem(db.Model):
@@ -350,6 +350,14 @@ class CartItem(db.Model):
     Methods:
         update_quantity: Updates the quantity of the item in the cart.
 
+    Example:
+        >>> user = User(username=..., name=..., email=..., address=...)
+        >>> cart = Cart(user=user)
+        >>> product = Product(name='TV', description='A small TV',
+        >>>                   price=100.99, stock=5)
+        >>> cart.add_product(product.id, quantity=2)
+        >>> cart.items[0].quantity
+        2
     """
     id = db.Column(db.Integer, primary_key=True)
     quantity = db.Column(db.Integer, default=1, nullable=False)
@@ -363,6 +371,19 @@ class CartItem(db.Model):
 
         If the quantity is less than or equal to 0, the item is removed from
         the cart. Otherwise, the quantity value will simply be updated.
+
+        Args:
+            quantity (int): The new quantity of the item in the cart.
+
+        Example:
+            >>> user = User(username=..., name=..., email=..., address=...)
+            >>> cart = Cart(user=user)
+            >>> product = Product(name='TV', description='A small TV',
+            >>>                   price=100.99, stock=5)
+            >>> cart.add_product(product.id, quantity=2)
+            >>> cart.items[0].update_quantity(4)
+            >>> cart.items[0].quantity
+            4
         """
         if quantity <= 0:
             db.session.delete(self)
@@ -372,7 +393,7 @@ class CartItem(db.Model):
             db.session.commit()
 
     def __repr__(self):
-        return f'<CartItem {self.id}>'
+        return f'<CartItem id={self.id}>'
 
 
 class Order(db.Model):
@@ -412,6 +433,16 @@ class Order(db.Model):
 
         Returns:
             Order: The newly created order.
+
+        Example:
+            >>> user = User(username=..., name=..., email=..., address=...)
+            >>> cart = Cart(user=user)
+            >>> product = Product(name='TV', description='A small TV',
+            >>>                   price=100.99, stock=5)
+            >>> cart.add_product(product.id, quantity=2)
+            >>> order = Order.create_order_from_cart(cart)
+            >>> order.items[0].name
+            'TV'
         """
         order = Order(user_id=cart.user_id, order_date=datetime.now())
 
@@ -424,6 +455,17 @@ class Order(db.Model):
         db.session.commit()
         return order
 
+    @staticmethod
+    def get_all_orders_in_csv_format() -> str:
+        orders = Order.query.all()
+        result = 'order_id,user_id,order_date,product_id,quantity,price\n'
+        for order in orders:
+            for item in order.items:
+                result += (f'{order.id},{order.user_id},{order.order_date},'
+                           f'{item.product_id},{item.quantity},{item.price}\n')
+        return result
+
+
     def get_total_price(self) -> float:
         """Calculates the total price of all items in the order.
 
@@ -433,11 +475,21 @@ class Order(db.Model):
 
         Returns:
             float: The total price of all items in the order.
+
+        Example:
+            >>> user = User(username=..., name=..., email=..., address=...)
+            >>> cart = Cart(user=user)
+            >>> product = Product(name='TV', description='A small TV',
+            >>>                   price=100.99, stock=5)
+            >>> cart.add_product(product.id, quantity=2)
+            >>> order = Order.create_order_from_cart(cart)
+            >>> order.get_total_price()
+            201.98
         """
         return sum(item.quantity * item.price for item in self.items)
 
     def __repr__(self):
-        return f'<Order {self.id}>'
+        return f'<Order id={self.id}>'
 
 
 class OrderItem(db.Model):
@@ -455,6 +507,18 @@ class OrderItem(db.Model):
         price (float): The price of the product at the time of the order.
         order (Order): The order associated with the item.
         product (Product): The product associated with the item.
+
+    Example:
+        >>> user = User(username=..., name=..., email=..., address=...)
+        >>> cart = Cart(user=user)
+        >>> product = Product(name='TV', description='A small TV',
+        >>>                   price=100.99, stock=5)
+        >>> cart.add_product(product.id, quantity=2)
+        >>> order = Order.create_order_from_cart(cart)
+        >>> order_item = order.items[0]
+        >>> order_item.quantity
+        2
+
     """
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
@@ -465,4 +529,4 @@ class OrderItem(db.Model):
     product = db.relationship('Product')
 
     def __repr__(self):
-        return f'<Order {self.id}>'
+        return f'<OrderItem id={self.id}>'

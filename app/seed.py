@@ -2,9 +2,16 @@
 This is for inserting initial data into the database.
 Entering "flask seed" in the terminal will cause these items to be inserted into the database.
 """
+import random
+from datetime import datetime, timedelta
+
+from werkzeug.security import generate_password_hash
+
 from . import create_app
 from .extensions import db
-from .models import Product
+from .models import Order, OrderItem, Product, User
+
+
 
 def seed_products():
     products = [
@@ -58,18 +65,78 @@ def seed_products():
 
 
 def seed_users():
+    pw = generate_password_hash('password')
     users = [
-        # Add some seed users?
+        {'username': 'some_admin', 'password_hash': pw,
+         'is_admin': True, 'name': 'Admin Person', 'email': 'admin@tinker.buy',
+         'address': '143 Main St, Fargo, ND 58102'},
+        {'username': 'stricklandroberto', 'password_hash': pw,
+         'is_admin': False, 'name': 'Pamela Allen',
+         'email': 'connorfrench@example.org',
+         'address': '3794 Andrew Estates Suite 724, Yvonnemouth, ND 07954'},
+        {'username': 'fsnyder', 'password_hash': pw, 'is_admin': False,
+         'name': 'Anna Perry', 'email': 'wallacedaisy@example.com',
+         'address': 'USS Velasquez, FPO AA 38357'},
+        {'username': 'williamschelsea', 'password_hash': pw,
+         'is_admin': False, 'name': 'Charles Jacobs',
+         'email': 'pattontiffany@example.net',
+         'address': '785 Jessica Row Apt. 471, Johnville, NJ 95529'},
+        {'username': 'blake61', 'password_hash': pw, 'is_admin': False,
+         'name': 'Jamie Bates', 'email': 'hansonanthony@example.org',
+         'address': '10979 Johnston Mission, Port Jamesberg, NH 09672'},
+        {'username': 'williamsonmelody', 'password_hash': pw,
+         'is_admin': False, 'name': 'Nathan Rose',
+         'email': 'ehorn@example.org',
+         'address': '6149 Lopez Avenue, Washingtonburgh, ME 57228'},
+        {'username': 'scott83', 'password_hash': pw, 'is_admin': False,
+         'name': 'Jennifer Johnson', 'email': 'scott23@example.org',
+         'address': '705 Barrera Key, Port Troyberg, KY 34263'},
+        {'username': 'nicholas67', 'password_hash': pw, 'is_admin': False,
+         'name': 'Angie Norton', 'email': 'tinabradley@example.org',
+         'address': '5702 Michelle Cliffs, Robinburgh, NV 73126'},
+        {'username': 'melissawilson', 'password_hash': pw, 'is_admin': False,
+         'name': 'Jacob Anderson', 'email': 'robin44@example.net',
+         'address': '769 Hunter Viaduct Apt. 175, Hannahhaven, TX 12770'},
+        {'username': 'raymond08', 'password_hash': pw, 'is_admin': False,
+         'name': 'Craig Brown', 'email': 'hpayne@example.net',
+         'address': '9483 Patrick Lights Apt. 030, Charleneside, IN 99552'},
+        {'username': 'calderonkevin', 'password_hash': pw, 'is_admin': False,
+         'name': 'Stacy Phillips', 'email': 'luislester@example.org',
+         'address': '95823 Moody Row Suite 566, New Brandonfurt, RI 36709'},
     ]
-
     for user in users:
         new_user = User(**user)
-        db.session.add(user)
+        db.session.add(new_user)
     db.session.commit()
     print("Seeding users...")
 
+def seed_orders():
+    # Grab all non-admins and all products
+    users = User.query.filter_by(is_admin=False).all()
+    products = Product.query.all()
+
+    # Create 50 random orders
+    for _ in range(50):
+        user = random.choice(users)
+        # Choose a random day in the last year
+        date = datetime.now() - timedelta(days=random.randint(1, 365))
+        order = Order(user_id=user.id, order_date=date)
+        db.session.add(order)
+        db.session.commit()
+
+        # Create 1 to 6 random items for each order
+        for _ in range(random.randint(1, 6)):
+            product = random.choice(products)
+            quantity = random.randint(1, 5)
+            item = OrderItem(order_id=order.id, product_id=product.id,
+                             quantity=quantity, price=product.price)
+            db.session.add(item)
+        db.session.commit()
+
+
 def seed():
-    seed_products()
+    #seed_products()
     seed_users()
+    seed_orders()
     
 

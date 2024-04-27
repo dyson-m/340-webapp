@@ -10,24 +10,26 @@
       {% endif %}
     </head>
     <body>
-        <header>
-          <h1>Tinker Buy</h1>
-          <nav>
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('catalog') }}">Catalog</a>
-            <a href="{{ url_for('cart') }}"><i class="fas fa-shopping-cart"></i> Cart</a>
-            {% if current_user.is_anonymous %}
-              <a href="{{ url_for('login') }}">Login</a>
-            {% else %}
-
-              <a href="{{ url_for('logout') }}">Logout</a>
+        <header>Tinker Buy</header>
+        <nav>
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('catalog') }}">Catalog</a>
+          <a href="{{ url_for('cart') }}"><i class="fas fa-shopping-cart"></i> Cart</a>
+          {% if current_user.is_anonymous %}
+            <a href="{{ url_for('login') }}">Login</a>
+          {% else %}
+            <a href="{{ url_for('profile') }}">Profile</a>
+            {% if current_user.is_admin %}
+              <a href="{{ url_for('admin') }}">Admin</a>
             {% endif %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+          {% endif %}
             <form action="{{ url_for('search') }}" method="get" class="search-form">
               <input type="text" name="query" placeholder="Search products..." class="search-input">
               <button type="submit" class="search-button">Search</button>
             </form>
-          </nav>
-        </header>
+        </form>
+        </nav>
         <hr>
         {% with messages = get_flashed_messages() %}
           {% if messages %}
