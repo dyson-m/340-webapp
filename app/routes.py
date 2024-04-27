@@ -156,3 +156,10 @@ def init_routes(app):
         return Response(data, mimetype='text/csv',
                         headers={'Content-Disposition':
                                  'attachment; filename=orders.csv'})
+
+    @app.route('/checkout')
+    @login_required
+    def checkout():
+        """Checkout page for the user's cart"""
+        return render_template('checkout.html',
+                               title='Checkout')
