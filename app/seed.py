@@ -120,7 +120,7 @@ def seed_orders():
         user = random.choice(users)
         # Choose a random day in the last year
         date = datetime.now() - timedelta(days=random.randint(1, 365))
-        order = Order(user_id=user.id, date=date)
+        order = Order(user_id=user.id, order_date=date)
         db.session.add(order)
         db.session.commit()
 
