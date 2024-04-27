@@ -157,6 +157,7 @@ def init_routes(app):
                         headers={'Content-Disposition':
                                  'attachment; filename=orders.csv'})
 
+
     @app.route('/checkout', methods=['GET', 'POST'])
     @login_required
     def checkout():
@@ -170,15 +171,23 @@ def init_routes(app):
         form = CheckoutForm(obj=user)
         if form.validate_on_submit():
             # Payment processing would occur here...
-            order = Order.create_order_from_cart(cart)
-            db.session.add(order)
-            db.session.commit()
-            flash('Order placed successfully.')
-            return redirect(url_for('order_success'))
+            try:
+                order = Order.create_order_from_cart(cart)
+                flash('Order placed successfully.')
+                return redirect(url_for('order_success'))
+            # If product was out of stock...
+            except ValueError as e:
+                flash(str(e))
+                return redirect(url_for('checkout'))
+            # If something went wrong with SQL...
+            except RuntimeError as e:
+                flash("An unexpected error occurred. Please try again.")
+                return redirect(url_for('checkout'))
         return render_template('checkout.html',
                                title='Checkout',
                                form=form,
                                cart=cart)
+
 
     @app.route('/order_success')
     @login_required

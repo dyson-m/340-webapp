@@ -64,3 +64,35 @@ def test_checkout_submit_success(session, client, user, cart, product):
         assert new_product_stock == previous_product_stock - 2
         # Check cart has been emptied.
         assert len(cart.items) == 0
+
+def test_checkout_submit_failure(session, client, cart, product):
+    with client:
+        previous_product_stock = product.stock
+        client.post('/login', data=dict(username='test_username',
+                                        password='correct_password'),
+                    follow_redirects=True)
+        cart.add_product(product.id, 200)
+        session.commit()
+        response = client.post('/checkout', data={
+            'name': 'test_name',
+            'address': 'test_address',
+            'card_type': 'visa',
+            'card_number': '1234567890123456',
+            'exp_month': '1',
+            'exp_year': '2032',
+            'cvv': '123'
+        }, follow_redirects=True)
+        print(str(response.data, 'utf-8'))
+        assert b'Insufficient stock' in response.data
+        assert product.stock == previous_product_stock
+        assert len(cart.items) == 1
+        assert Order.query.count() == 0
+
+def test_checkout_success_page(session, client, user):
+    with client:
+        client.post('/login', data=dict(username='test_username',
+                                        password='correct_password'),
+                    follow_redirects=True)
+        response = client.get('/order_success')
+        assert response.status_code == 200
+        assert b'order has been placed' in response.data

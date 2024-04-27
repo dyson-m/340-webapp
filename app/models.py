@@ -464,7 +464,9 @@ class Order(db.Model):
                 # If there isn't enough stock, rollback the transaction.
                 if product.stock < cart_item.quantity:
                     db.session.rollback()
-                    raise ValueError('Not enough stock for product')
+                    raise ValueError('Insufficient stock for product.'
+                                     f'Stock {product.stock} < '
+                                     f'Quantity {cart_item.quantity}')
                 # Update stock.
                 product.subtract_stock(cart_item.quantity)
                 # Create orders
