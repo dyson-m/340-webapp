@@ -26,9 +26,11 @@ def test_search_route_no_query(session, client, products):
     for p in products:
         assert bytes(p.name, 'utf-8') in response.data
 
-def test_product_route(client, session, products):
+def test_product_route(session, client, product):
     """Test product pages work and have the item name on them."""
+    id = product.id
     with client:
-        response = client.get('/itmes_page/1')
+        session.add(product)
+        response = client.get(f'/items_page/{id}')
         assert response.status_code == 200
-        # assert bytes(product.name, 'utf-8') in response.data
+        assert bytes(product.name, 'utf-8') in response.data
