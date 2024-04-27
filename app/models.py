@@ -455,6 +455,17 @@ class Order(db.Model):
         db.session.commit()
         return order
 
+    @staticmethod
+    def get_all_orders_in_csv_format() -> str:
+        orders = Order.query.all()
+        result = 'order_id,user_id,order_date,product_id,quantity,price\n'
+        for order in orders:
+            for item in order.items:
+                result += (f'{order.id},{order.user_id},{order.order_date},'
+                           f'{item.product_id},{item.quantity},{item.price}\n')
+        return result
+
+
     def get_total_price(self) -> float:
         """Calculates the total price of all items in the order.
 

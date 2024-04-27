@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 import sqlalchemy as sa
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.fields.choices import SelectField
 from wtforms.validators import DataRequired, ValidationError, EqualTo 
 #from wtforms.validators import Email # requires email-validator to be installed
 
@@ -35,9 +36,15 @@ class RegistrationForm(FlaskForm):
     #     if user is not None:
     #         raise ValidationError('Please use a different email address.')
 
+
 class UpdateProfileForm(FlaskForm):
     username = StringField('Username', render_kw=dict(readonly=True))
     name = StringField('Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired()])
     address = StringField('Address', validators=[DataRequired()])
     submit = SubmitField('Update Profile')
+
+
+class DeleteUserForm(FlaskForm):
+    user = SelectField('User', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Delete Account')
