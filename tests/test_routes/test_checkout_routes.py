@@ -64,6 +64,8 @@ def test_checkout_submit_success(session, client, user, cart, product):
         assert new_product_stock == previous_product_stock - 2
         # Check cart has been emptied.
         assert len(cart.items) == 0
+        # Check order success page has order number.
+        assert bytes(str(new_order.id), 'utf-8') in response.data
 
 def test_checkout_submit_failure(session, client, cart, product):
     with client:
@@ -88,11 +90,11 @@ def test_checkout_submit_failure(session, client, cart, product):
         assert len(cart.items) == 1
         assert Order.query.count() == 0
 
-def test_checkout_success_page(session, client, user):
+def test_checkout_order_success_page_failure(session, client, user):
+    client.post('/login', data=dict(username='test_username',
+                                    password='correct_password'),
+                follow_redirects=True)
     with client:
-        client.post('/login', data=dict(username='test_username',
-                                        password='correct_password'),
-                    follow_redirects=True)
-        response = client.get('/order_success')
+        response = client.get('/order_success', follow_redirects=True)
         assert response.status_code == 200
-        assert b'order has been placed' in response.data
+        assert b'No order number found' in response.data

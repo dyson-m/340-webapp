@@ -253,16 +253,16 @@ def init_routes(app):
                                form=form,
                                cart=cart)
 
-
     @app.route('/order_success')
     @login_required
     def order_success():
         order_number = session.get('order_number', None)
         if order_number:
             session.pop('order_number', None)
-            return render_template('order_success.html', title='Order Success', order_number=order_number)
+            return render_template('order_success.html',
+                                   title='Order Success',
+                                   order_number=order_number)
         else:
-            
             flash('No order number found.')
             return redirect(url_for('index'))
                                 
