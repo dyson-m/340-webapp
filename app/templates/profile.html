@@ -1,31 +1,35 @@
 ﻿{% extends "base.html" %}
 
 {% block content %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<div class="profile-update-container">
     <h1>Update Profile</h1>
-    <form action="" method="post">
+    <form action="" method="post" class="profile-update-form">
         {{ form.hidden_tag() }}
-        <p>
+        <div class="form-group">
             {{ form.name.label }}<br>
-            {{ form.name(size=32) }}<br>
+            {{ form.name(size=32, class_='form-control') }}<br>
             {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+            <span class="error">{{ error }}</span>
             {% endfor %}
-        </p>
-        <p>
+        </div>
+        <div class="form-group">
             {{ form.email.label }}<br>
-            {{ form.email(size=32) }}<br>
+            {{ form.email(size=32, class_='form-control') }}<br>
             {% for error in form.email.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+            <span class="error">{{ error }}</span>
             {% endfor %}
-        </p>
-        <p>
+        </div>
+        <div class="form-group">
             {{ form.address.label }}<br>
-            {{ form.address(size=32) }}<br>
+            {{ form.address(size=32, class_='form-control') }}<br>
             {% for error in form.address.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+            <span class="error">{{ error }}</span>
             {% endfor %}
-        </p>
-        <p>{{ form.submit() }}</p>
+        </div>
+        <div class="form-group">
+            {{ form.submit(class_='btn btn-primary') }}
+        </div>
     </form>
+</div>
 {% endblock %}

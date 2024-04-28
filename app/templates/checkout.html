@@ -1,29 +1,61 @@
 ﻿{% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
+<div class="checkout-container">
+    <div class="order-container">
+        <h2>Your Order</h2>
+        <ul class="order-summary">
+            {% for item in cart.items %}
+            <li class="order-item">
+                <span class="product-name">{{ item.product.name }}</span>
+                <span class="product-quantity">Qty: {{ item.quantity }}</span>
+                <span class="product-price">${{ '%.2f' | format(item.product.price) }}</span>
+                <span class="product-total">${{ '%.2f' | format(item.product.price * item.quantity) }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="order-total">
+            <strong>Total:</strong> ${{ '%.2f' | format(cart.get_total_price()) }}
+        </div>
+    </div>
     <h1>Checkout</h1>
-    <form action="" method="post">
+    <form action="" method="post" class="checkout-form">
         {{ form.hidden_tag() }}
-        <div>{{ form.name.label }} {{ form.name() }}</div>
-        <div>{{ form.address.label }} {{ form.address() }}</div>
-        <div>{{ form.card_type.label }} {{ form.card_type() }}</div>
-        <div>{{ form.card_number.label }} {{ form.card_number() }}</div>
-        <div>{{ form.exp_month.label }} {{ form.exp_month() }}</div>
+        <div class="form-group">
+            {{ form.name.label }} {{ form.name(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.address.label }} {{ form.address(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.card_type.label }} {{ form.card_type(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.card_number.label }} {{ form.card_number(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.exp_month.label }} {{ form.exp_month(class='form-control') }}
             {% for error in form.exp_month.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">{{ error }}</span>
             {% endfor %}
-        <div>{{ form.exp_year.label }} {{ form.exp_year() }}</div>
+        </div>
+        <div class="form-group">
+            {{ form.exp_year.label }} {{ form.exp_year(class='form-control') }}
             {% for error in form.exp_year.errors %}
-                <span style="color: red;">[{{ error }}]</span>
+                <span class="error">{{ error }}</span>
             {% endfor %}
-        <div>{{ form.cvv.label }} {{ form.cvv() }}</div>
-        <div>{{ form.submit() }}</div>
+        </div>
+        <div class="form-group">
+            {{ form.cvv.label }} {{ form.cvv(class='form-control cvv') }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+        <div class="order-total">
+            <strong>Total:</strong> ${{ '%.2f' | format(cart.get_total_price()) }}
+        </div>
     </form>
-    <h2>Your Order</h2>
-    <ul>
-        {% for item in cart.items %}
-            <li>{{ item.product.name }} - ${{ item.product.price }} - x{{ item.quantity }}</li>
-        {% endfor %}
-    </ul>
-    <div>Total: ${{ cart.get_total_price() }}</div>
+    
+</div>
 {% endblock %}

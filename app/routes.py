@@ -1,6 +1,6 @@
 from urllib.parse import urlsplit
 
-from flask import Response, render_template, flash, redirect, url_for, request
+from flask import Response, render_template, flash, redirect, session, url_for, request
 from flask_login import current_user, login_required, login_user, logout_user
 import sqlalchemy as sa
 
@@ -237,6 +237,7 @@ def init_routes(app):
             # Payment processing would occur here...
             try:
                 order = Order.create_order_from_cart(cart)
+                session['order_number'] = order.id
                 flash('Order placed successfully.')
                 return redirect(url_for('order_success'))
             # If product was out of stock...
@@ -256,6 +257,12 @@ def init_routes(app):
     @app.route('/order_success')
     @login_required
     def order_success():
-        """Page for displaying a successful order."""
-        return render_template('order_success.html',
-                               title='Order Success')
+        order_number = session.get('order_number', None)
+        if order_number:
+            session.pop('order_number', None)
+            return render_template('order_success.html', title='Order Success', order_number=order_number)
+        else:
+            
+            flash('No order number found.')
+            return redirect(url_for('index'))
+                                
