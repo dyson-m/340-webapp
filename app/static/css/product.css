@@ -13,6 +13,7 @@
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     transition: all 0.3s ease-in-out;
+    text-decoration: none;
 }
 .product-item:hover {
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -31,4 +32,13 @@
 .price {
     font-weight: bold;
     color: #0056b3;
+}
+.product-link {
+    text-decoration: none; /* Removes the underline from the links */
+    color: inherit; /* Keeps the link color consistent with the rest of the text */
+}
+
+.product-link:hover,
+.product-link:focus {
+    text-decoration: none; /* Ensures there's no underline on hover or focus */
 }

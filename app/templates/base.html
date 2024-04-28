@@ -1,47 +1,50 @@
 <!doctype html>
 <html>
-    <head>
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-      {% if title %}
-      <title>{{ title }} - Tinker Buy</title>
-      {% else %}
-      <title>Welcome to Tinker Buy</title>
-      {% endif %}
-    </head>
-    <body>
-        <header>Tinker Buy</header>
-        <nav>
-          <a href="{{ url_for('index') }}">Home</a>
-          <a href="{{ url_for('catalog') }}">Catalog</a>
-          <a href="{{ url_for('cart') }}"><i class="fas fa-shopping-cart"></i> Cart</a>
-          {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Login</a>
-          {% else %}
-            <a href="{{ url_for('profile') }}">Profile</a>
-            {% if current_user.is_admin %}
-              <a href="{{ url_for('admin') }}">Admin</a>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% if title %}
+    <title>{{ title }} - Tinker Buy</title>
+    {% else %}
+    <title>Welcome to Tinker Buy</title>
+    {% endif %}
+</head>
+<body>
+    <header class="site-header">
+        <h1>Tinker Buy</h1>
+        <nav class="site-nav">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('catalog') }}">Catalog</a>
+            <a href="{{ url_for('cart') }}"><i class="fas fa-shopping-cart"></i> Cart</a>
+            {% if current_user.is_anonymous %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% else %}
+                <a href="{{ url_for('profile') }}">Profile</a>
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin') }}">Admin</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}">Logout</a>
             {% endif %}
-            <a href="{{ url_for('logout') }}">Logout</a>
-          {% endif %}
             <form action="{{ url_for('search') }}" method="get" class="search-form">
-              <input type="text" name="query" placeholder="Search products..." class="search-input">
-              <button type="submit" class="search-button">Search</button>
+                <input type="text" name="query" placeholder="Search products..." class="search-input">
+                <button type="submit" class="search-button">Search</button>
             </form>
-        </form>
         </nav>
-        <hr>
+    </header>
+    <hr>
+    <div class="flash-messages">
         {% with messages = get_flashed_messages() %}
-          {% if messages %}
-          <ul class="messages">
-              {% for message in messages %}
-              <li>{{ message }}</li>
-              {% endfor %}
-          </ul>
-          {% endif %}
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {% endwith %}
-        <div class="content">
-            {% block content %}{% endblock %}
-        </div>
-    </body>
+    </div>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
 </html>

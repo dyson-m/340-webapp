@@ -10,14 +10,18 @@
     </div>
     <div class="product-metadata">
         <span class="product-stock">In stock: {{ results.stock }}</span>
-        <span class="product-price">Price: ${{ results.price }}</span>
+        <span class="product-price">Price: ${{ "%.2f" | format(results.price) }}</span>
+        
     </div>
-
-    <form action="{{ url_for('add_to_cart', product_id=results.id) }}" method="post">
-        <input type="number" name="quantity" value="1" min="1" max="{{ results.stock }}" class="quantity-input">
-        <input type="hidden" name="product_id" value="{{ results.id }}">
-        <button type="submit" class="btn btn-primary">Add to Cart</button>
-    </form>
+    {% if current_user.is_authenticated %}
+        <form action="{{ url_for('add_to_cart', product_id=results.id) }}" method="post">
+            <input type="number" name="quantity" value="1" min="1" max="{{ results.stock }}" class="quantity-input">
+            <input type="hidden" name="product_id" value="{{ results.id }}">
+            <button type="submit" class="btn btn-primary">Add to Cart</button>
+        </form>
+    {%else%}
+        <a href="{{ url_for('login') }}" class="btn btn-primary">Log in to Purchase</a>
+    {%endif%}
     
 </div>
 
