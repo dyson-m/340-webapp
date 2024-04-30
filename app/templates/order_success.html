@@ -5,9 +5,12 @@
 <div class="order-success-container">
 
     <h1>Thank You!</h1>
-    <p>Your order has been placed successfully.</p>
     {% if order_number %}
-    <p>Your order number is: <strong>{{ order_number }}</strong></p>
+        <p>Your order number is: <strong>{{ order_number }}</strong></p>
     {% endif %}
+    {% if order_date %}
+        <p>Date of order: <strong>{{ order_date }}</strong></p>
+    {% endif %}
+    <p>Your order has been placed successfully.</p>
 </div>
 {% endblock %}
