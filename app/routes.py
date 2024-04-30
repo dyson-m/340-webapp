@@ -16,7 +16,15 @@ def init_routes(app):
     @app.route('/')
     @app.route('/index')
     def index():
-        return render_template('index.html', title='Home')
+        # featured products on homepage (3 ids, hardcoded for demonstration)
+        # only three please!
+        featured_ids = [1, 2, 3]
+
+        featured_products = []
+        for product_id in featured_ids:
+            featured_products.append(Product.query.get_or_404(product_id))
+
+        return render_template('index.html', title='Home', featured=featured_products)
 
     @app.route('/login', methods = ['GET', 'POST'])
     def login():

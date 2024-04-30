@@ -1,8 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% if current_user.is_authenticated %}   
-        <h1>Hi {{ current_user.username }},</h1>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    {% if current_user.is_authenticated %}
+        <h1 class="centered-header-2">Hi {{ current_user.name.split(maxsplit=1)[0] }},</h1>
     {% endif %}
-    <h1>Welcome to Tinker Buy!</h1>
+    <h1 class="centered-header">Welcome to Tinker Buy!</h1>
+    <br>
+    <br>
+    <br>
+    <hr/>
+    <h2 class="centered-header">Featured Products:</h2>
+    <ul class="products-featured">
+        {% for p in featured %}
+       
+        <li class="product-item"> 
+            <a href="{{ url_for('items_page', prod_id=p.id) }}" class="product-link">
+                <div class="product-header">{{ p.name }}</div>
+                <div class="product-detail description">{{p.description}}</div>
+                <div class="product-detail">In stock: {{ p.stock }}</div>
+                <div class="product-detail price">Price: ${{ "%.2f" | format(p.price) }}</div>
+            </a>
+        </li>
+        
+        {% endfor %}
+    </ul>
+
+
 {% endblock %}
