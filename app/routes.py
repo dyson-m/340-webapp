@@ -10,6 +10,7 @@ from .extensions import db
 from .models import Order, Product, User, Cart, CartItem
 from .utils import admin_required
 
+from datetime import datetime
 
 def init_routes(app):
     @app.route('/')
@@ -239,6 +240,7 @@ def init_routes(app):
             try:
                 order = Order.create_order_from_cart(cart)
                 session['order_number'] = order.id
+                session['order_date'] = order.order_date
                 flash('Order placed successfully.')
                 return redirect(url_for('order_success'))
             # If product was out of stock...
@@ -258,11 +260,18 @@ def init_routes(app):
     @login_required
     def order_success():
         order_number = session.get('order_number', None)
+        order_date = session.get('order_date', None)
         if order_number:
             session.pop('order_number', None)
+            if order_date:
+                session.pop('order_date', None)
+                order_date_string = order_date.strftime("%m-%d-%Y")
+            else:
+                order_date_string = None
             return render_template('order_success.html',
                                    title='Order Success',
-                                   order_number=order_number)
+                                   order_number=order_number, 
+                                   order_date=order_date_string)
         else:
             flash('No order number found.')
             return redirect(url_for('index'))
