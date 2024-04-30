@@ -18,7 +18,7 @@ def init_routes(app):
     def index():
         # featured products on homepage (3 ids, hardcoded for demonstration)
         # only three please!
-        featured_ids = [1, 2, 3]
+        featured_ids = [34, 42, 13]
 
         featured_products = []
         for product_id in featured_ids:
