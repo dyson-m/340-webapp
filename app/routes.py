@@ -58,7 +58,7 @@ def init_routes(app):
             db.session.add(user)
             db.session.commit()
             flash('Thanks for registering!')
-            return redirect(url_for('index'))  
+            return redirect(url_for('login'))  
         return render_template('register.html', title='Register', form=form)
 
     @app.route('/dbtest')
@@ -195,7 +195,7 @@ def init_routes(app):
             form.email.data = current_user.email
             form.address.data = current_user.address
         return render_template('profile.html',
-                               title=f"{current_user.name}'s Profile", form=form)
+                               title=f"{current_user.name.split(maxsplit=1)[0]}'s Profile", form=form)
 
     @app.route('/admin', methods=['GET', 'POST'])
     @admin_required

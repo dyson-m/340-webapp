@@ -37,19 +37,19 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different username.')
 
-    ##### Optional email field. Requires Email validator. 
-    # def validate_email(self, email): 
-    #     user = db.session.scalar(sa.select(User).where(
-    #         User.email == email.data))
-    #     if user is not None:
-    #         raise ValidationError('Please use a different email address.')
+    #### Optional email field. Requires Email validator. 
+    def validate_email(self, email): 
+        user = db.session.scalar(sa.select(User).where(
+            User.email == email.data))
+        if user is not None:
+            raise ValidationError('Please use a different email address.')
 
 
 class UpdateProfileForm(FlaskForm):
     username = StringField('Username', render_kw=dict(readonly=True))
-    name = StringField('Name', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired()])
-    address = StringField('Address', validators=[DataRequired()])
+    name = StringField('Name', validators=[DataRequired(), Length(max=100)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=120)])
+    address = StringField('Address', validators=[DataRequired(), Length(max=120)])
     submit = SubmitField('Update Profile')
 
 
