@@ -33,6 +33,15 @@
     font-weight: bold;
     color: #0056b3;
 }
+.description {
+    font-weight: light;
+    color: #919191;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* number of lines to show */
+        line-clamp: 1; 
+    -webkit-box-orient: vertical;
+}
 .product-link {
     text-decoration: none; /* Removes the underline from the links */
     color: inherit; /* Keeps the link color consistent with the rest of the text */

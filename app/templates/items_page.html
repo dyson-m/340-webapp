@@ -11,7 +11,7 @@
     <div class="product-metadata">
         <span class="product-stock">In stock: {{ results.stock }}</span>
         <span class="product-price">Price: ${{ "%.2f" | format(results.price) }}</span>
-        
+        <br></br>
     </div>
     {% if current_user.is_authenticated %}
         <form action="{{ url_for('add_to_cart', product_id=results.id) }}" method="post">
@@ -20,7 +20,7 @@
             <button type="submit" class="btn btn-primary">Add to Cart</button>
         </form>
     {%else%}
-        <a href="{{ url_for('login') }}" class="btn btn-primary">Log in to Purchase</a>
+        <a href="{{ url_for('login', next=url_for('items_page', prod_id=results.id)) }}" class="btn btn-primary">Log in to Purchase</a>
     {%endif%}
     
 </div>
