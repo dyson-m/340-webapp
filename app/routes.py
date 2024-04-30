@@ -118,6 +118,7 @@ def init_routes(app):
         return render_template('items_page.html', results=product)
 
     @app.route('/cart')
+    @login_required
     def cart():
         cart = None  
         if current_user.is_authenticated:

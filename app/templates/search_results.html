@@ -13,7 +13,7 @@
         <li class="product-item"> 
             <a href="{{ url_for('items_page', prod_id=p.id) }}" class="product-link">
                 <div class="product-header">{{ p.name }}</div>
-               
+                <div class="product-detail description">{{p.description}}</div>
                 <div class="product-detail">In stock: {{ p.stock }}</div>
                 <div class="product-detail price">Price: ${{ "%.2f" | format(p.price) }}</div>
             </a>
