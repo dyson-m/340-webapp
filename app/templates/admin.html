@@ -1,21 +1,29 @@
 ﻿{% extends "base.html" %}
 
 {% block content %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<div class="admin-container">
     <h1>Admin Dashboard</h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.user.label }}<br>
-            {{ form.user(class='form-control')}}
-            {% for error in form.user.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-        <p>{{ form.submit() }}</p>
-    </form>
     <form action="{{ url_for('sales_report') }}" method="get">
-        <button type="submit">Download Sales Report</button>
+        <button type="submit" class="btn-primary">Download Sales Report</button>
     </form>
+    <form action="" method="post" class="form">
+        {{ form.hidden_tag() }}
+        <div class="admin-form">
+            <p>
+                <br>
+                <hr/>
+                <strong>Delete User:</strong>
+                <br>
+                <br>
+                {{ form.user(class='form-control')}}
+                {% for error in form.user.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+            <p>{{ form.submit(class_='btn btn-delete') }}</p>
+        </div>
+    </form>
+</div>
 {% endblock %}

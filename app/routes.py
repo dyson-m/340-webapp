@@ -16,7 +16,15 @@ def init_routes(app):
     @app.route('/')
     @app.route('/index')
     def index():
-        return render_template('index.html', title='Home')
+        # featured products on homepage (3 ids, hardcoded for demonstration)
+        # only three please!
+        featured_ids = [1, 2, 3]
+
+        featured_products = []
+        for product_id in featured_ids:
+            featured_products.append(Product.query.get_or_404(product_id))
+
+        return render_template('index.html', title='Home', featured=featured_products)
 
     @app.route('/login', methods = ['GET', 'POST'])
     def login():
@@ -58,7 +66,7 @@ def init_routes(app):
             db.session.add(user)
             db.session.commit()
             flash('Thanks for registering!')
-            return redirect(url_for('index'))  
+            return redirect(url_for('login'))  
         return render_template('register.html', title='Register', form=form)
 
     @app.route('/dbtest')
@@ -92,7 +100,7 @@ def init_routes(app):
 
         results = Product.query.all()
 
-        return render_template('search_results.html', results=results)
+        return render_template('search_results.html', title="Products Catalog", results=results)
     
    
     
@@ -108,7 +116,8 @@ def init_routes(app):
         else:
             results = Product.query.all()
 
-        return render_template('search_results.html', results=results,
+        return render_template('search_results.html', title=f'"{search_term}" Search Results',
+                               results=results,
                                search_term=search_term)
 
     @app.route('/items_page/<int:prod_id>')
@@ -116,7 +125,7 @@ def init_routes(app):
 
         product = Product.query.get_or_404(prod_id)
 
-        return render_template('items_page.html', results=product)
+        return render_template('items_page.html', title=product.name, results=product)
 
     @app.route('/cart')
     @login_required
@@ -130,7 +139,7 @@ def init_routes(app):
         if not cart:
             cart = Cart()  
             cart.items = [] 
-        return render_template('cart.html', cart=cart)   
+        return render_template('cart.html', title='Cart', cart=cart)   
       
     
     @app.route('/add_to_cart/<int:product_id>', methods=['POST'])
@@ -194,7 +203,7 @@ def init_routes(app):
             form.email.data = current_user.email
             form.address.data = current_user.address
         return render_template('profile.html',
-                               title='Update Profile', form=form)
+                               title=f"{current_user.name.split(maxsplit=1)[0]}'s Profile", form=form)
 
     @app.route('/admin', methods=['GET', 'POST'])
     @admin_required
@@ -269,7 +278,7 @@ def init_routes(app):
             else:
                 order_date_string = None
             return render_template('order_success.html',
-                                   title='Order Success',
+                                   title=f'Order #{order_number} Placed',
                                    order_number=order_number, 
                                    order_date=order_date_string)
         else:
